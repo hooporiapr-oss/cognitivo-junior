@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>Cognitivo Junior</title>
+<meta name="description" content="Juegos de memoria y atención para preescolar. Nada se guarda y nada se envía.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Cognitivo Junior">
+<meta property="og:title" content="Cognitivo Junior">
+<meta property="og:description" content="Juegos de memoria y atención para preescolar. Nada se guarda y nada se envía.">
+<meta property="og:locale" content="es_PR">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#FAF7F2;--ink:#3A4A5A;--mute:#7D8C9A;
+  --cell:#E7EEF3;--cellEdge:#D0DCE5;--calm:#5B8DB8;--gold:#F0B429;
+}
+html{background:var(--bg)}
+body{margin:0;min-height:100dvh;display:flex;flex-direction:column;background:var(--bg);
+  color:var(--ink);font-family:"Trebuchet MS","Segoe UI",Arial,sans-serif;
+  line-height:1.55;-webkit-text-size-adjust:100%}
+.wrap{width:min(560px,92vw);margin:0 auto}
+
+header{flex:0 0 auto;padding:calc(26px + env(safe-area-inset-top,0px)) 0 0}
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+h1{font-size:clamp(1.7rem,6vw,2.3rem);font-weight:800;letter-spacing:-.025em;line-height:1.05}
+h1 span{color:var(--gold)}
+.sub{font-size:.9rem;color:var(--mute);margin-top:4px}
+.langb{border:1.5px solid var(--cellEdge);background:#fff;color:var(--mute);border-radius:999px;
+  padding:7px 14px;font:inherit;font-size:.72rem;font-weight:800;cursor:pointer;flex-shrink:0}
+
+main{flex:1 1 auto;padding:26px 0 36px}
+.lede{color:var(--mute);margin-bottom:24px}
+
+.card{display:block;text-decoration:none;color:inherit;background:#fff;
+  border:2px solid var(--cellEdge);border-radius:20px;padding:20px 22px;margin-bottom:14px;
+  transition:border-color .15s,transform .15s,box-shadow .15s}
+.card:hover{border-color:var(--calm);transform:translateY(-2px);
+  box-shadow:0 8px 22px rgba(91,141,184,.14)}
+.card .pips{display:flex;gap:7px;margin-bottom:13px}
+.card .pips i{width:17px;height:17px;border-radius:50%;display:block}
+.card h2{font-size:1.25rem;font-weight:800;letter-spacing:-.02em;margin-bottom:3px}
+.card p{font-size:.92rem;color:var(--mute);margin:0}
+.card .age{display:inline-block;margin-top:11px;font-size:.66rem;font-weight:800;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--calm);
+  background:#EDF4FA;border-radius:999px;padding:5px 11px}
+
+.soon{opacity:.55;border-style:dashed;cursor:default}
+.soon:hover{border-color:var(--cellEdge);transform:none;box-shadow:none}
+
+.note{background:#fff;border:2px solid var(--cellEdge);border-radius:18px;
+  padding:18px 20px;margin-top:26px}
+.note b{display:block;font-size:.68rem;font-weight:800;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--calm);margin-bottom:7px}
+.note p{font-size:.9rem;color:var(--mute);margin:0 0 8px}
+.note p:last-child{margin:0}
+
+footer{flex:0 0 auto;padding:18px 0 calc(22px + env(safe-area-inset-bottom,0px));
+  text-align:center;font-size:.78rem;color:var(--mute);border-top:1px solid var(--cellEdge)}
+footer a{color:var(--mute)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap head">
+    <div>
+      <h1>Cognitivo <span>Junior</span></h1>
+      <div class="sub" id="tSub"></div>
+    </div>
+    <button class="langb" id="langBtn" onclick="toggleLang()">EN</button>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <p class="lede" id="tLede"></p>
+
+    <a class="card" href="luces.html">
+      <div class="pips">
+        <i style="background:#FFC44D"></i><i style="background:#FF9B8A"></i>
+        <i style="background:#7FC2E8"></i><i style="background:#F79AC8"></i>
+        <i style="background:#C9A3EA"></i>
+      </div>
+      <h2 id="tG1"></h2>
+      <p id="tG1d"></p>
+      <span class="age" id="tG1a"></span>
+    </a>
+
+    <div class="card soon">
+      <div class="pips">
+        <i style="background:var(--cellEdge)"></i><i style="background:var(--cellEdge)"></i>
+        <i style="background:var(--cellEdge)"></i>
+      </div>
+      <h2 id="tG2"></h2>
+      <p id="tG2d"></p>
+      <span class="age" id="tG2a"></span>
+    </div>
+
+    <div class="note">
+      <b id="tNoteL"></b>
+      <p id="tNote1"></p>
+      <p id="tNote2"></p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    © 2026 Gostar Digital LLC · Puerto Rico ·
+    <a href="mailto:gostardigital@gmail.com">gostardigital@gmail.com</a>
+  </div>
+</footer>
+
+<script>
+var S={
+  es:{
+    sub:'Preescolar · 2 a 5 años',
+    lede:'Juegos cortos de memoria y atención, hechos para nenes que todavía no leen. El maestro escoge la velocidad y el tamaño del tablero; el nene sólo ve luces.',
+    g1:'Las Luces',
+    g1d:'Se encienden unos cuadros, se apagan, y el nene los busca. La velocidad baja hasta una luz cada doce segundos.',
+    g1a:'Listo',
+    g2:'Próximamente',
+    g2d:'El segundo juego está en camino.',
+    g2a:'En preparación',
+    noteL:'Para el maestro',
+    note1:'Nada se guarda y nada se envía. Lo que hace el nene se queda en la tableta — no pedimos nombres y no hay tabla de posiciones.',
+    note2:'Ningún juego se puede perder. Un cuadro equivocado no termina nada; la ronda sigue y el nene se lleva su estrella igual.'
+  },
+  en:{
+    sub:'Preschool · ages 2 to 5',
+    lede:'Short memory and attention games, built for children who cannot read yet. The teacher picks the speed and the board size; the child only ever sees lights.',
+    g1:'Las Luces',
+    g1d:'Some squares light up, they go out, and the child finds them again. The speed goes as slow as one light every twelve seconds.',
+    g1a:'Ready',
+    g2:'Coming soon',
+    g2d:'The second game is on its way.',
+    g2a:'In progress',
+    noteL:'For the teacher',
+    note1:'Nothing is saved and nothing is sent. What the child does stays on the tablet — we ask for no names and there is no leaderboard.',
+    note2:'No game can be lost. A wrong square ends nothing; the round carries on and the child earns their star all the same.'
+  }
+};
+var LANG='es';
+try{ LANG=localStorage.getItem('cfh_lang')||localStorage.getItem('cp-lang')||
+  localStorage.getItem('fc-lang')||
+  ((navigator.language||'').toLowerCase().indexOf('es')===0?'es':'en'); }catch(e){}
+
+function draw(){
+  var t=S[LANG]||S.es;
+  document.getElementById('tSub').textContent=t.sub;
+  document.getElementById('tLede').textContent=t.lede;
+  document.getElementById('tG1').textContent=t.g1;
+  document.getElementById('tG1d').textContent=t.g1d;
+  document.getElementById('tG1a').textContent=t.g1a;
+  document.getElementById('tG2').textContent=t.g2;
+  document.getElementById('tG2d').textContent=t.g2d;
+  document.getElementById('tG2a').textContent=t.g2a;
+  document.getElementById('tNoteL').textContent=t.noteL;
+  document.getElementById('tNote1').textContent=t.note1;
+  document.getElementById('tNote2').textContent=t.note2;
+  document.getElementById('langBtn').textContent=LANG==='es'?'EN':'ES';
+  document.documentElement.lang=LANG;
+}
+function toggleLang(){
+  LANG=LANG==='es'?'en':'es';
+  try{ localStorage.setItem('cfh_lang',LANG);localStorage.setItem('cp-lang',LANG);
+       localStorage.setItem('fc-lang',LANG); }catch(e){}
+  draw();
+}
+draw();
+</script>
+</body>
+</html>
