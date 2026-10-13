@@ -1,4 +1,4 @@
-/* ── Cognitivo Junior · la puerta ────────────────────────────────────
+/* ── Tinluz · la puerta ────────────────────────────────────
    Se escribe el código UNA VEZ por equipo y queda guardado hasta que se
    vence. No por sesión: una maestra de preescolar no va a escribir un
    código cada mañana, y si se lo pides, deja de abrir el juego.
@@ -53,7 +53,7 @@ function vigente(c){
 
 var T={
   es:{
-    t:'Cognitivo Junior',
+    t:'Tinluz',
     p:'Escribe el código de tu centro. Se escribe una sola vez en esta tableta.',
     ph:'CJ-••••-••••',
     go:'Entrar',
@@ -64,7 +64,7 @@ var T={
     bye:'Salir de este centro'
   },
   en:{
-    t:'Cognitivo Junior',
+    t:'Tinluz',
     p:'Enter your centre’s code. You type it once on this tablet.',
     ph:'CJ-••••-••••',
     go:'Enter',
@@ -108,7 +108,7 @@ function pintarPuerta(onOk){
     '#cjGate .m{margin-top:14px;font-size:.9rem;font-weight:700;min-height:1.2em;color:#C96A5B}'+
     '</style>'+
     '<div class="cx">'+
-      '<h2>Cognitivo <i>Junior</i></h2>'+
+      '<h2>Tin<i>luz</i></h2>'+
       '<p>'+t('p')+'</p>'+
       '<input id="cjGateIn" type="text" maxlength="14" placeholder="'+t('ph')+'" '+
         'autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="go">'+
