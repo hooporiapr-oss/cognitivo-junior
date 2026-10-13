@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<title>Sígueme · Cognitivo Junior</title>
+<title>Sígueme · Tinluz</title>
 <style>
 /* ── Sígueme — pre-K / preescolar ────────────────────────────────
    Follow the lights: they come on one at a time and the child taps
@@ -346,7 +346,36 @@ function tone(freq,dur,vol,type){
 }
 /* A pentatonic run for a finished round — always pleasant, never a buzzer. */
 var PENTA=[523.25,587.33,659.25,783.99,880.00];
-function goodTone(i){ tone(PENTA[Math.min(i,PENTA.length-1)],.34,.16,'sine') }
+
+/* El "tin". Una campanita, no una nota: el nombre del producto es el
+   sonido que hace al tocar, así que tiene que sonar como suena la
+   palabra — corto, claro, y que se apague solo.
+
+   Una campana no es una sola frecuencia. Lleva un armónico que no cuadra
+   con la fundamental (aquí 2.76×, que es lo que hace una barra de metal)
+   y se apaga rápido. Con un seno pelado suena a pito; con el armónico
+   suena a campana.
+
+   Sigue subiendo de tono con cada acierto, como antes, así que el nene
+   oye que va avanzando sin que nadie se lo diga. */
+function tin(i){
+  var c=ac(); if(!c) return;
+  try{
+    if(c.state==='suspended')c.resume();
+    var f=PENTA[Math.min(i,PENTA.length-1)]*2;   /* una octava arriba: brilla */
+    var t=c.currentTime;
+    [[1,.16,.42],[2.76,.07,.26]].forEach(function(p){
+      var o=c.createOscillator(), g=c.createGain();
+      o.type='sine'; o.frequency.value=f*p[0];
+      o.connect(g); g.connect(c.destination);
+      g.gain.setValueAtTime(0,t);
+      g.gain.linearRampToValueAtTime(p[1],t+.004);   /* golpe seco */
+      g.gain.exponentialRampToValueAtTime(.0005,t+p[2]);
+      o.start(t); o.stop(t+p[2]+.02);
+    });
+  }catch(e){}
+}
+function goodTone(i){ tin(i) }
 function showTone(){ tone(659.25,.22,.11,'triangle') }
 function tickTone(){ tone(440,.10,.07,'sine') }
 function oopsTone(){ tone(233.08,.26,.10,'sine') }
