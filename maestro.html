@@ -53,7 +53,9 @@ main{flex:1 1 auto;padding:22px 0 36px}
 table{width:100%;border-collapse:collapse;font-size:.86rem;margin-top:10px}
 th{text-align:left;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;
   color:var(--mute);font-weight:800;padding:8px 6px 8px 0;border-bottom:1px solid var(--cellEdge)}
-td{padding:9px 6px 9px 0;border-bottom:1px solid var(--cellEdge);vertical-align:top}
+td{padding:9px 6px 9px 0;border-bottom:1px solid var(--cellEdge);vertical-align:middle;
+  white-space:nowrap}
+td.gmc{white-space:normal}
 tr:last-child td{border-bottom:none}
 .stars{white-space:nowrap;letter-spacing:.04em}
 .gm{display:inline-block;font-size:.66rem;font-weight:800;letter-spacing:.08em;
@@ -188,10 +190,7 @@ function esc(s){
 function when(iso){
   try{
     var d=new Date(iso);
-    return d.toLocaleDateString(LANG==='es'?'es-PR':'en-US',
-      {day:'numeric',month:'short'})+' '+
-      d.toLocaleTimeString(LANG==='es'?'es-PR':'en-US',
-      {hour:'numeric',minute:'2-digit'});
+    return d.toLocaleDateString(LANG==='es'?'es-PR':'en-US',{day:'numeric',month:'short'});
   }catch(e){ return iso.slice(0,10) }
 }
 
@@ -235,7 +234,7 @@ function draw(){
         runs.map(function(e){
           var gold=Math.max(0,e.perfect|0), plain=Math.max(0,e.helped|0);
           return '<tr><td>'+esc(when(e.at))+'</td>'+
-            '<td><span class="gm">'+T(e.game==='sigueme'?'sigueme':'luces')+'</span></td>'+
+            '<td class="gmc"><span class="gm">'+T(e.game==='sigueme'?'sigueme':'luces')+'</span></td>'+
             '<td>'+esc(e.bpm||'?')+' · '+esc(e.board||'?')+'</td>'+
             '<td class="stars">'+
               (new Array(gold+1).join('⭐'))+(new Array(plain+1).join('✨'))+
@@ -251,7 +250,7 @@ function draw(){
       '<div class="top" data-toggle="'+k.id+'">'+
         '<div class="nm">'+esc(k.name)+'</div>'+
         '<div class="tot"><b>'+runs.length+'</b>'+
-          (runs.length===1?T('session'):T('sessions'))+
+          ' '+(runs.length===1?T('session'):T('sessions'))+
           (totalRounds?'<br>'+totalPerfect+'/'+totalRounds+' ⭐':'')+'</div>'+
         '<div class="caret">'+(open[k.id]?'▲':'▼')+'</div>'+
       '</div>'+
