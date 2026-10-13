@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>Códigos · Cognitivo Junior</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+/* Esta pantalla se usa de pie, con el teléfono en la mano, frente a
+   una directora que acaba de decir que sí. Todo está pensado para ese
+   momento: pocos campos, el código enorme, y un botón que lo manda por
+   WhatsApp sin tener que copiarlo bien. */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#FAF7F2;--ink:#3A4A5A;--mute:#7D8C9A;--cell:#E7EEF3;--cellEdge:#D0DCE5;
+      --calm:#5B8DB8;--gold:#F0B429;--got:#7CC47F;--warn:#C96A5B}
+html{background:var(--bg)}
+body{margin:0;min-height:100dvh;display:flex;flex-direction:column;background:var(--bg);
+  color:var(--ink);font-family:"Trebuchet MS","Segoe UI",Arial,sans-serif;line-height:1.5;
+  -webkit-text-size-adjust:100%}
+.wrap{width:min(560px,93vw);margin:0 auto}
+
+header{flex:0 0 auto;padding:calc(22px + env(safe-area-inset-top,0px)) 0 0}
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+h1{font-size:1.6rem;font-weight:800;letter-spacing:-.025em;line-height:1.05}
+h1 span{color:var(--gold)}
+.who{font-size:.82rem;color:var(--mute);margin-top:3px}
+.out{border:1.5px solid var(--cellEdge);background:#fff;color:var(--mute);border-radius:999px;
+  padding:7px 14px;font:inherit;font-size:.72rem;font-weight:800;cursor:pointer;flex-shrink:0}
+
+main{flex:1 1 auto;padding:20px 0 36px}
+label{display:block;font-size:.66rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--mute);margin:16px 0 6px}
+input,select{width:100%;padding:14px;border:2px solid var(--cellEdge);border-radius:13px;
+  background:#fff;color:var(--ink);font:inherit;font-size:1rem}
+input:focus,select:focus{outline:none;border-color:var(--calm);box-shadow:0 0 0 3px rgba(91,141,184,.14)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.b{display:block;width:100%;margin-top:18px;padding:17px;border:none;border-radius:16px;
+  background:var(--calm);color:#fff;font:inherit;font-size:1.05rem;font-weight:800;cursor:pointer}
+.b.alt{background:#fff;color:var(--ink);border:2px solid var(--cellEdge)}
+.b:active{transform:scale(.99)}
+.msg{margin-top:12px;font-size:.9rem;font-weight:700;min-height:1.2em}
+.msg.bad{color:var(--warn)}
+.msg.ok{color:var(--got)}
+
+/* El momento: el código, una sola vez. */
+.born{background:#fff;border:3px solid var(--got);border-radius:20px;padding:22px 20px;
+  margin:20px 0;text-align:center}
+.born .lab{font-size:.64rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--got);margin-bottom:10px}
+.born .code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  font-size:clamp(1.6rem,8vw,2.3rem);font-weight:700;letter-spacing:.06em;
+  word-break:break-all;margin-bottom:6px}
+.born .meta{font-size:.86rem;color:var(--mute);margin-bottom:14px}
+.born .warn{font-size:.8rem;color:var(--warn);font-weight:700;margin-top:12px}
+.born .btns{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.born .btns button{padding:13px;border-radius:13px;border:2px solid var(--cellEdge);
+  background:#fff;color:var(--ink);font:inherit;font-weight:800;font-size:.88rem;cursor:pointer}
+.born .btns button.go{background:var(--got);border-color:var(--got);color:#fff}
+
+h2{font-size:.68rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--mute);margin:30px 0 10px}
+.card{background:#fff;border:2px solid var(--cellEdge);border-radius:16px;padding:14px 16px;
+  margin-bottom:10px}
+.card .t{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+.card .s{font-size:1.02rem;font-weight:800;flex:1;min-width:0}
+.card .k{font-size:.62rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
+  border-radius:999px;padding:3px 9px;background:var(--cell);color:var(--mute)}
+.card .st{font-size:.62rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
+  border-radius:999px;padding:3px 9px}
+.st.al-dia{background:#E8F5E9;color:#2E7D32}
+.st.por-vencer{background:#FFF4E0;color:#A86A00}
+.st.vencido{background:#FDECEA;color:#B3261E}
+.st.apagado{background:var(--cell);color:var(--mute)}
+.st.sin-fecha{background:#EDF4FA;color:var(--calm)}
+.card .d{font-size:.82rem;color:var(--mute);margin-top:5px}
+.card .acts{display:flex;gap:7px;margin-top:11px;flex-wrap:wrap}
+.card .acts button{padding:8px 14px;border:2px solid var(--cellEdge);background:#fff;
+  border-radius:999px;color:var(--mute);font:inherit;font-size:.76rem;font-weight:800;cursor:pointer}
+.card .acts button.bad{color:var(--warn)}
+
+.empty{border:2px dashed var(--cellEdge);border-radius:16px;padding:26px 18px;text-align:center;
+  color:var(--mute);font-size:.9rem}
+.gate{max-width:380px;margin:40px auto 0}
+.hint{font-size:.82rem;color:var(--mute);margin-top:8px}
+footer{flex:0 0 auto;padding:16px 0 calc(20px + env(safe-area-inset-bottom,0px));text-align:center;
+  font-size:.76rem;color:var(--mute);border-top:1px solid var(--cellEdge)}
+footer a{color:var(--mute)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap head">
+    <div>
+      <h1>Có<span>digos</span></h1>
+      <div class="who" id="who"></div>
+    </div>
+    <button class="out" id="outBtn" style="display:none" onclick="salir()">Salir</button>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="gate" id="gate">
+      <label for="clave">Tu clave</label>
+      <input id="clave" type="password" autocomplete="off" autocapitalize="off"
+             autocorrect="off" spellcheck="false" enterkeyhint="go">
+      <p class="hint">No distingue mayúsculas.</p>
+      <button class="b" onclick="entrar()">Entrar</button>
+      <p class="msg" id="gmsg"></p>
+    </div>
+
+    <div id="panel" style="display:none">
+      <h2>Hacer un código</h2>
+      <label for="site">Nombre del centro</label>
+      <input id="site" type="text" maxlength="60" placeholder="Head Start Loíza"
+             autocapitalize="words" enterkeyhint="next">
+      <div class="row2">
+        <div>
+          <label for="kind">Tipo</label>
+          <select id="kind" onchange="kindChanged()">
+            <option value="prueba">Prueba</option>
+            <option value="licencia">Licencia</option>
+            <option value="cortesia">Cortesía</option>
+          </select>
+        </div>
+        <div>
+          <label for="days">Días</label>
+          <input id="days" type="number" min="1" max="3650" inputmode="numeric">
+        </div>
+      </div>
+      <p class="hint" id="kindHint"></p>
+      <button class="b" onclick="crear()">Hacer el código</button>
+      <p class="msg" id="cmsg"></p>
+
+      <div id="born"></div>
+
+      <h2>Lo que hay <span id="count" style="color:var(--mute)"></span></h2>
+      <div id="list"></div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap"><a href="index.html">← Cognitivo Junior</a> · © 2026 Gostar Digital LLC</div>
+</footer>
+
+<script>
+(function(){
+var $=function(id){return document.getElementById(id)};
+
+var SB='https://sdaphocueugzfvjovuxd.supabase.co';
+var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkYXBob2N1ZXVnemZ2am92dXhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2MjQyMDgsImV4cCI6MjA5OTIwMDIwOH0.pDAzf4P6dD9eNEBlnP95SdF5BI-R84-Rdc0vKzYcn7M';
+
+function rpc(name,args){
+  return fetch(SB+'/rest/v1/rpc/'+name,{
+    method:'POST',
+    headers:{'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json'},
+    body:JSON.stringify(args||{})
+  }).then(function(r){ if(!r.ok) throw new Error('rpc '+r.status); return r.json() });
+}
+
+/* La clave vive en sessionStorage, no en localStorage: cierras la
+   pestaña y se va. Es la llave que crea todas las demás. */
+var CLAVE=null;
+try{ CLAVE=sessionStorage.getItem('cj-admin')||null; }catch(e){}
+
+function esc(s){
+  return String(s==null?'':s).replace(/[&<>"']/g,function(m){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]});
+}
+function say(id,t,c){ var e=$(id); if(e){ e.textContent=t; e.className='msg '+(c||'') } }
+function fecha(d){
+  if(!d)return 'sin fecha';
+  try{ return new Date(d+'T12:00:00').toLocaleDateString('es-PR',
+        {day:'numeric',month:'short',year:'numeric'}); }catch(e){ return d }
+}
+function cuando(ts){
+  if(!ts)return 'nunca se ha usado';
+  try{ return 'visto '+new Date(ts).toLocaleDateString('es-PR',{day:'numeric',month:'short'}); }
+  catch(e){ return '' }
+}
+
+window.kindChanged=function(){
+  var k=$('kind').value;
+  $('days').value = k==='licencia' ? 365 : (k==='prueba' ? 30 : '');
+  $('kindHint').textContent = k==='licencia'
+    ? 'Un año. Es lo que se vende.'
+    : (k==='prueba'
+       ? 'Para que prueben. Pon 7 si es una vista rápida que vas a dejar con alguien.'
+       : 'Déjalo en blanco y no se vence nunca. Para un centro de referencia o un piloto.');
+};
+
+window.entrar=function(){
+  var v=($('clave').value||'').trim();
+  if(!v) return say('gmsg','Escribe tu clave.','bad');
+  say('gmsg','…');
+  rpc('cj_admin_id',{p_admin:v}).then(function(label){
+    if(!label) return say('gmsg','Esa clave no sirve.','bad');
+    CLAVE=v;
+    try{ sessionStorage.setItem('cj-admin',v); }catch(e){}
+    $('clave').value='';
+    abrir(label);
+  }).catch(function(e){ console.error(e); say('gmsg','No se pudo conectar. Intenta otra vez.','bad') });
+};
+
+window.salir=function(){
+  CLAVE=null;
+  try{ sessionStorage.removeItem('cj-admin'); }catch(e){}
+  $('panel').style.display='none'; $('gate').style.display='block';
+  $('outBtn').style.display='none'; $('who').textContent=''; $('born').innerHTML='';
+  say('gmsg','');
+};
+
+function abrir(label){
+  $('gate').style.display='none';
+  $('panel').style.display='block';
+  $('outBtn').style.display='block';
+  $('who').textContent=label||'';
+  kindChanged();
+  cargar();
+}
+
+window.crear=function(){
+  var site=($('site').value||'').trim();
+  var kind=$('kind').value;
+  var days=$('days').value===''?null:parseInt($('days').value,10);
+  if(!site) return say('cmsg','Escribe el nombre del centro.','bad');
+  if(days!==null&&(isNaN(days)||days<1)) return say('cmsg','Los días no sirven.','bad');
+  say('cmsg','…');
+  rpc('cj_code_add',{p_admin:CLAVE,p_site:site,p_kind:kind,p_days:days})
+    .then(function(r){
+      if(!r||!r.ok){
+        if(r&&r.reason==='admin') return salir();
+        if(r&&r.reason==='site') return say('cmsg','Escribe el nombre del centro.','bad');
+        if(r&&r.reason==='kind') return say('cmsg','Ese tipo no existe.','bad');
+        return say('cmsg','No se pudo. Intenta otra vez.','bad');
+      }
+      say('cmsg','');
+      $('site').value='';
+      mostrarNuevo(r);
+      cargar();
+    })
+    .catch(function(e){ console.error(e); say('cmsg','No se pudo conectar.','bad') });
+};
+
+/* El código se enseña una sola vez. Que sea imposible perderlo por
+   accidente: grande, copiable de un toque, y listo para WhatsApp. */
+function mostrarNuevo(r){
+  var txt='Acceso a Cognitivo Junior para '+r.site+'\n\n'+
+          'Código: '+r.code+'\n'+
+          (r.until?('Válido hasta: '+fecha(r.until)+'\n'):'')+
+          '\nSe escribe una sola vez en cada tableta.';
+  $('born').innerHTML=
+    '<div class="born">'+
+      '<div class="lab">Apúntalo ahora</div>'+
+      '<div class="code" id="newCode">'+esc(r.code)+'</div>'+
+      '<div class="meta">'+esc(r.site)+' · '+esc(r.kind)+
+        (r.until?' · hasta '+esc(fecha(r.until)):' · sin fecha')+'</div>'+
+      '<div class="btns">'+
+        '<button class="go" id="cpBtn">Copiar</button>'+
+        '<button id="waBtn">Enviar</button>'+
+      '</div>'+
+      '<div class="warn">No se vuelve a mostrar.</div>'+
+    '</div>';
+  $('cpBtn').onclick=function(){
+    try{
+      navigator.clipboard.writeText(r.code);
+      $('cpBtn').textContent='Copiado ✓';
+    }catch(e){
+      var s=document.createRange(); s.selectNode($('newCode'));
+      window.getSelection().removeAllRanges(); window.getSelection().addRange(s);
+    }
+  };
+  $('waBtn').onclick=function(){
+    if(navigator.share){ navigator.share({text:txt}).catch(function(){}); }
+    else{ window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank','noopener'); }
+  };
+  try{ $('born').scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){}
+}
+
+function cargar(){
+  $('list').innerHTML='<div class="empty">…</div>';
+  rpc('cj_codes_list',{p_admin:CLAVE}).then(function(rows){
+    rows=rows||[];
+    $('count').textContent=rows.length?'('+rows.length+')':'';
+    if(!rows.length){
+      $('list').innerHTML='<div class="empty">Todavía no hay códigos. Haz el primero arriba.</div>';
+      return;
+    }
+    $('list').innerHTML=rows.map(function(r){
+      var cls=String(r.estado||'').replace(/ /g,'-');
+      return '<div class="card">'+
+        '<div class="t">'+
+          '<span class="s">'+esc(r.site)+'</span>'+
+          '<span class="k">'+esc(r.kind)+'</span>'+
+          '<span class="st '+cls+'">'+esc(r.estado)+'</span>'+
+        '</div>'+
+        '<div class="d">···'+esc(r.hint||'')+' · '+esc(fecha(r.valid_until))+
+          ' · '+esc(cuando(r.last_seen))+
+          (r.seen_count?' ('+r.seen_count+')':'')+'</div>'+
+        '<div class="acts">'+
+          (r.active?'<button data-renew="'+r.id+'">+1 año</button>':'')+
+          (r.active?'<button data-renew30="'+r.id+'">+30 días</button>':
+                    '<button data-renew="'+r.id+'">Encender +1 año</button>')+
+          (r.active?'<button class="bad" data-off="'+r.id+'">Apagar</button>':'')+
+        '</div>'+
+      '</div>';
+    }).join('');
+
+    $('list').querySelectorAll('[data-renew]').forEach(function(b){
+      b.onclick=function(){ renovar(b.dataset.renew,365,b) };
+    });
+    $('list').querySelectorAll('[data-renew30]').forEach(function(b){
+      b.onclick=function(){ renovar(b.dataset.renew30,30,b) };
+    });
+    $('list').querySelectorAll('[data-off]').forEach(function(b){
+      b.onclick=function(){
+        if(!confirm('¿Apagar este código? El centro deja de poder abrir los juegos.'))return;
+        b.disabled=true;
+        rpc('cj_code_off',{p_admin:CLAVE,p_id:b.dataset.off})
+          .then(function(r){ if(r&&r.reason==='admin')return salir(); cargar() })
+          .catch(function(e){ console.error(e); b.disabled=false });
+      };
+    });
+  }).catch(function(e){
+    console.error(e);
+    $('list').innerHTML='<div class="empty">No se pudo cargar la lista.</div>';
+  });
+}
+
+function renovar(id,days,btn){
+  btn.disabled=true;
+  rpc('cj_code_renew',{p_admin:CLAVE,p_id:id,p_days:days})
+    .then(function(r){ if(r&&r.reason==='admin')return salir(); cargar() })
+    .catch(function(e){ console.error(e); btn.disabled=false });
+}
+
+$('clave').addEventListener('keydown',function(e){
+  if(e.key==='Enter'){ e.preventDefault(); entrar(); }
+});
+$('site').addEventListener('keydown',function(e){
+  if(e.key==='Enter'){ e.preventDefault(); crear(); }
+});
+
+/* Si la clave sigue en la pestaña, entra solo. */
+if(CLAVE){
+  rpc('cj_admin_id',{p_admin:CLAVE})
+    .then(function(label){ if(label)abrir(label); else salir(); })
+    .catch(function(){});
+}
+})();
+</script>
+</body>
+</html>
