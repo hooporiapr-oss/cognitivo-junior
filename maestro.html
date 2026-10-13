@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>Progreso · Cognitivo Junior</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="Lo que ha hecho cada nene en esta tableta. No sale de aquí.">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#FAF7F2;--ink:#3A4A5A;--mute:#7D8C9A;--cell:#E7EEF3;--cellEdge:#D0DCE5;
+      --calm:#5B8DB8;--gold:#F0B429;--got:#7CC47F;--warn:#C96A5B}
+html{background:var(--bg)}
+body{margin:0;min-height:100dvh;display:flex;flex-direction:column;background:var(--bg);
+  color:var(--ink);font-family:"Trebuchet MS","Segoe UI",Arial,sans-serif;line-height:1.55;
+  -webkit-text-size-adjust:100%}
+.wrap{width:min(680px,92vw);margin:0 auto}
+
+header{flex:0 0 auto;padding:calc(24px + env(safe-area-inset-top,0px)) 0 0}
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+h1{font-size:clamp(1.5rem,5vw,2rem);font-weight:800;letter-spacing:-.025em;line-height:1.05}
+h1 span{color:var(--gold)}
+.sub{font-size:.88rem;color:var(--mute);margin-top:4px}
+.langb{border:1.5px solid var(--cellEdge);background:#fff;color:var(--mute);border-radius:999px;
+  padding:7px 14px;font:inherit;font-size:.72rem;font-weight:800;cursor:pointer;flex-shrink:0}
+
+main{flex:1 1 auto;padding:22px 0 36px}
+
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.b{padding:12px 17px;border:2px solid var(--cellEdge);background:#fff;border-radius:13px;
+  color:var(--ink);font:inherit;font-size:.88rem;font-weight:800;cursor:pointer}
+.b.go{border-color:var(--calm);background:var(--calm);color:#fff}
+.b.bad{border-color:var(--cellEdge);color:var(--warn)}
+.b:disabled{opacity:.45;cursor:default}
+
+.add{display:none;gap:8px;margin-bottom:20px}
+.add.on{display:flex}
+.add input{flex:1 1 160px;min-width:0;padding:12px;border:2px solid var(--cellEdge);
+  border-radius:13px;background:#fff;color:var(--ink);font:inherit;font-size:.98rem}
+.add input:focus{outline:none;border-color:var(--calm);box-shadow:0 0 0 3px rgba(91,141,184,.14)}
+
+.kid{background:#fff;border:2px solid var(--cellEdge);border-radius:18px;margin-bottom:12px;
+  overflow:hidden}
+.kid .top{display:flex;align-items:center;gap:12px;padding:16px 18px;cursor:pointer}
+.kid .nm{flex:1;font-size:1.1rem;font-weight:800;letter-spacing:-.01em;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kid .tot{font-size:.82rem;color:var(--mute);flex-shrink:0;text-align:right}
+.kid .tot b{display:block;font-size:1.05rem;color:var(--ink)}
+.kid .caret{color:var(--mute);font-size:.8rem;flex-shrink:0}
+.kid .body{display:none;border-top:1px solid var(--cellEdge);padding:4px 18px 16px}
+.kid.open .body{display:block}
+
+table{width:100%;border-collapse:collapse;font-size:.86rem;margin-top:10px}
+th{text-align:left;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--mute);font-weight:800;padding:8px 6px 8px 0;border-bottom:1px solid var(--cellEdge)}
+td{padding:9px 6px 9px 0;border-bottom:1px solid var(--cellEdge);vertical-align:top}
+tr:last-child td{border-bottom:none}
+.stars{white-space:nowrap;letter-spacing:.04em}
+.gm{display:inline-block;font-size:.66rem;font-weight:800;letter-spacing:.08em;
+  text-transform:uppercase;border-radius:999px;padding:3px 9px;background:var(--cell);color:var(--mute)}
+.rm{margin-top:14px;padding:9px 15px;border:2px solid var(--cellEdge);background:#fff;
+  border-radius:999px;color:var(--warn);font:inherit;font-size:.76rem;font-weight:800;cursor:pointer}
+
+.empty{background:#fff;border:2px dashed var(--cellEdge);border-radius:18px;
+  padding:30px 22px;text-align:center;color:var(--mute);font-size:.94rem}
+
+.note{background:#fff;border:2px solid var(--cellEdge);border-radius:18px;padding:18px 20px;margin-top:24px}
+.note b{display:block;font-size:.66rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--calm);margin-bottom:7px}
+.note p{font-size:.88rem;color:var(--mute);margin:0 0 8px}
+.note p:last-child{margin:0}
+
+footer{flex:0 0 auto;padding:18px 0 calc(22px + env(safe-area-inset-bottom,0px));text-align:center;
+  font-size:.78rem;color:var(--mute);border-top:1px solid var(--cellEdge)}
+footer a{color:var(--mute)}
+.s-site{font-size:.72rem;font-weight:800;letter-spacing:.06em;color:var(--calm);
+  background:#EDF4FA;border-radius:999px;padding:5px 12px;display:inline-block;margin-top:7px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap head">
+    <div>
+      <h1 id="tH1"></h1>
+      <div class="sub" id="tSub"></div>
+      <div class="s-site" id="cjSite"></div>
+    </div>
+    <button class="langb" id="langBtn" onclick="toggleLang()">EN</button>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="bar">
+      <button class="b go" id="bAdd"></button>
+      <button class="b" id="bCsv"></button>
+      <button class="b bad" id="bWipe"></button>
+    </div>
+
+    <div class="add" id="addRow">
+      <input id="newName" maxlength="30" autocapitalize="words" autocomplete="off">
+      <button class="b go" id="bSave"></button>
+      <button class="b" id="bCancel"></button>
+    </div>
+
+    <div id="list"></div>
+
+    <div class="note">
+      <b id="tNoteL"></b>
+      <p id="tNote1"></p>
+      <p id="tNote2"></p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a href="index.html" id="tBack"></a> · © 2026 Gostar Digital LLC
+  </div>
+</footer>
+
+<script src="cj-acceso.js"></script>
+<script src="cj-datos.js"></script>
+<script>
+(function(){
+var $=function(id){return document.getElementById(id)};
+if(window.CJA)CJA.guard(function(){});
+
+var S={
+  es:{
+    h1:'Progreso', sub:'Lo que ha hecho cada nene en esta tableta',
+    add:'+ Añadir nene', csv:'Bajar hoja (CSV)', wipe:'Borrar todo',
+    save:'Guardar', cancel:'Cancelar', ph:'Nombre',
+    none:'Todavía no hay nadie apuntado. Añade un nene aquí, o escógelo en la pantalla del juego antes de empezar.',
+    noneOff:'Este navegador no guarda nada (ventana privada o almacenamiento apagado). El progreso no se va a poder apuntar.',
+    sessions:'sesiones', session:'sesión',
+    thDate:'Fecha', thGame:'Juego', thSet:'Ajustes', thStars:'Rondas',
+    luces:'Las Luces', sigueme:'Sígueme',
+    noRuns:'Sin sesiones todavía.',
+    rm:'Quitar a {N} y sus sesiones',
+    rmAsk:'¿Quitar a {N}? Se borran también sus sesiones. No se puede deshacer.',
+    wipeAsk:'¿Borrar todos los nenes y todas las sesiones de esta tableta? No se puede deshacer.',
+    noteL:'De dónde sale esto',
+    note1:'Todo esto vive en esta tableta y en ningún otro sitio. No se envía a ningún servidor y nadie fuera de aquí lo ve.',
+    note2:'Si se borran los datos del navegador, esto se va con ellos. La hoja CSV es la copia que te puedes quedar.',
+    back:'← Cognitivo Junior'
+  },
+  en:{
+    h1:'Progress', sub:'What each child has done on this tablet',
+    add:'+ Add a child', csv:'Download sheet (CSV)', wipe:'Erase everything',
+    save:'Save', cancel:'Cancel', ph:'Name',
+    none:'Nobody is listed yet. Add a child here, or pick one on the game screen before starting.',
+    noneOff:'This browser saves nothing (private window or storage is off). Progress cannot be recorded.',
+    sessions:'sessions', session:'session',
+    thDate:'Date', thGame:'Game', thSet:'Settings', thStars:'Rounds',
+    luces:'Las Luces', sigueme:'Sígueme',
+    noRuns:'No sessions yet.',
+    rm:'Remove {N} and their sessions',
+    rmAsk:'Remove {N}? Their sessions go too. This cannot be undone.',
+    wipeAsk:'Erase every child and every session on this tablet? This cannot be undone.',
+    noteL:'Where this comes from',
+    note1:'All of this lives on this tablet and nowhere else. Nothing is sent to a server and nobody outside this device sees it.',
+    note2:'If the browser data is cleared, this goes with it. The CSV is the copy you get to keep.',
+    back:'← Cognitivo Junior'
+  }
+};
+var LANG='es';
+try{ LANG=localStorage.getItem('cfh_lang')||localStorage.getItem('cp-lang')||
+  localStorage.getItem('fc-lang')||
+  ((navigator.language||'').toLowerCase().indexOf('es')===0?'es':'en'); }catch(e){}
+function T(k,v){
+  var s=(S[LANG]&&S[LANG][k])||S.es[k]||'';
+  if(v)Object.keys(v).forEach(function(x){ s=s.split('{'+x+'}').join(v[x]) });
+  return s;
+}
+window.toggleLang=function(){
+  LANG=LANG==='es'?'en':'es';
+  try{ localStorage.setItem('cfh_lang',LANG);localStorage.setItem('cp-lang',LANG);
+       localStorage.setItem('fc-lang',LANG); }catch(e){}
+  draw();
+};
+
+function esc(s){
+  return String(s==null?'':s).replace(/[&<>"']/g,function(m){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]});
+}
+function when(iso){
+  try{
+    var d=new Date(iso);
+    return d.toLocaleDateString(LANG==='es'?'es-PR':'en-US',
+      {day:'numeric',month:'short'})+' '+
+      d.toLocaleTimeString(LANG==='es'?'es-PR':'en-US',
+      {hour:'numeric',minute:'2-digit'});
+  }catch(e){ return iso.slice(0,10) }
+}
+
+var open={};   /* qué tarjetas están abiertas */
+
+function draw(){
+  $('tH1').innerHTML='Pro<span>greso</span>';
+  $('tH1').textContent=T('h1');
+  $('tSub').textContent=T('sub');
+  $('bAdd').textContent=T('add');
+  $('bCsv').textContent=T('csv');
+  $('bWipe').textContent=T('wipe');
+  $('bSave').textContent=T('save');
+  $('bCancel').textContent=T('cancel');
+  $('newName').placeholder=T('ph');
+  $('tNoteL').textContent=T('noteL');
+  $('tNote1').textContent=T('note1');
+  $('tNote2').textContent=T('note2');
+  $('tBack').textContent=T('back');
+  $('langBtn').textContent=LANG==='es'?'EN':'ES';
+  document.documentElement.lang=LANG;
+
+  var ok=window.CJ&&CJ.available();
+  $('bAdd').disabled=!ok; $('bCsv').disabled=!ok; $('bWipe').disabled=!ok;
+
+  var kids=ok?CJ.kids():[];
+  if(!kids.length){
+    $('list').innerHTML='<div class="empty">'+(ok?T('none'):T('noneOff'))+'</div>';
+    return;
+  }
+
+  $('list').innerHTML=kids.map(function(k){
+    var runs=CJ.forKid(k.id);
+    var body;
+    if(!runs.length){
+      body='<p style="color:var(--mute);font-size:.88rem;margin-top:10px">'+T('noRuns')+'</p>';
+    }else{
+      body='<table><thead><tr>'+
+        '<th>'+T('thDate')+'</th><th>'+T('thGame')+'</th>'+
+        '<th>'+T('thSet')+'</th><th>'+T('thStars')+'</th></tr></thead><tbody>'+
+        runs.map(function(e){
+          var gold=Math.max(0,e.perfect|0), plain=Math.max(0,e.helped|0);
+          return '<tr><td>'+esc(when(e.at))+'</td>'+
+            '<td><span class="gm">'+T(e.game==='sigueme'?'sigueme':'luces')+'</span></td>'+
+            '<td>'+esc(e.bpm||'?')+' · '+esc(e.board||'?')+'</td>'+
+            '<td class="stars">'+
+              (new Array(gold+1).join('⭐'))+(new Array(plain+1).join('✨'))+
+              ' <span style="color:var(--mute)">'+gold+'/'+(gold+plain)+'</span></td></tr>';
+        }).join('')+'</tbody></table>';
+    }
+    body+='<button class="rm" data-rm="'+k.id+'">'+T('rm',{N:esc(k.name)})+'</button>';
+
+    var totalPerfect=0,totalRounds=0;
+    runs.forEach(function(e){ totalPerfect+=e.perfect|0; totalRounds+=(e.perfect|0)+(e.helped|0) });
+
+    return '<div class="kid'+(open[k.id]?' open':'')+'" data-kid="'+k.id+'">'+
+      '<div class="top" data-toggle="'+k.id+'">'+
+        '<div class="nm">'+esc(k.name)+'</div>'+
+        '<div class="tot"><b>'+runs.length+'</b>'+
+          (runs.length===1?T('session'):T('sessions'))+
+          (totalRounds?'<br>'+totalPerfect+'/'+totalRounds+' ⭐':'')+'</div>'+
+        '<div class="caret">'+(open[k.id]?'▲':'▼')+'</div>'+
+      '</div>'+
+      '<div class="body">'+body+'</div>'+
+    '</div>';
+  }).join('');
+
+  $('list').querySelectorAll('[data-toggle]').forEach(function(el){
+    el.onclick=function(){ var id=el.dataset.toggle; open[id]=!open[id]; draw() };
+  });
+  $('list').querySelectorAll('[data-rm]').forEach(function(el){
+    el.onclick=function(ev){
+      ev.stopPropagation();
+      var id=el.dataset.rm, nm=CJ.kidName(id);
+      if(confirm(T('rmAsk',{N:nm}))){ CJ.removeKid(id); delete open[id]; draw(); }
+    };
+  });
+}
+
+$('bAdd').onclick=function(){ $('addRow').classList.add('on'); $('newName').focus() };
+$('bCancel').onclick=function(){ $('addRow').classList.remove('on'); $('newName').value='' };
+$('bSave').onclick=function(){
+  if(window.CJ)CJ.addKid($('newName').value);
+  $('newName').value=''; $('addRow').classList.remove('on'); draw();
+};
+$('newName').onkeydown=function(e){ if(e.key==='Enter'){e.preventDefault();$('bSave').click()} };
+
+$('bWipe').onclick=function(){
+  if(confirm(T('wipeAsk'))){ CJ.clearAll(); open={}; draw(); }
+};
+
+$('bCsv').onclick=function(){
+  try{
+    var blob=new Blob(['﻿'+CJ.csv()],{type:'text/csv;charset=utf-8'});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');
+    a.href=url;
+    a.download='cognitivo-junior-'+new Date().toISOString().slice(0,10)+'.csv';
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(url); a.remove() },1000);
+  }catch(e){ console.error(e); }
+};
+
+draw();
+})();
+</script>
+</body>
+</html>
