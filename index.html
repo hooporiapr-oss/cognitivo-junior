@@ -99,10 +99,16 @@ footer a{color:var(--mute)}
       <span class="age" id="tG2a"></span>
     </a>
 
+    <a class="card" href="maestro.html" style="margin-top:22px">
+      <h2 id="tG3"></h2>
+      <p id="tG3d"></p>
+    </a>
+
     <div class="note">
       <b id="tNoteL"></b>
       <p id="tNote1"></p>
       <p id="tNote2"></p>
+      <p id="tNote3"></p>
     </div>
   </div>
 </main>
@@ -126,8 +132,11 @@ var S={
     g2d:'Las luces se encienden una por una y el nene las repite en el mismo orden. Si se equivoca, la secuencia se repite.',
     g2a:'Listo',
     noteL:'Para el maestro',
-    note1:'Nada se guarda y nada se envía. Lo que hace el nene se queda en la tableta — no pedimos nombres y no hay tabla de posiciones.',
-    note2:'Ningún juego se puede perder. Un cuadro equivocado no termina nada; la ronda sigue y el nene se lleva su estrella igual.'
+    note1:'Nada se envía a ningún sitio. No hay servidor, no hay cuenta y no hay tabla de posiciones.',
+    note2:'Por defecto no se apunta nada. Si el maestro quiere seguir el progreso, escoge un nombre antes de empezar y la sesión se apunta — en esta tableta y en ningún otro sitio.',
+    note3:'Ningún juego se puede perder. Un cuadro equivocado no termina nada; la ronda sigue y el nene se lleva su estrella igual.',
+    g3:'Progreso',
+    g3d:'Lo que ha hecho cada nene en esta tableta. Se baja en hoja de cálculo.'
   },
   en:{
     sub:'Preschool · ages 2 to 5',
@@ -139,8 +148,11 @@ var S={
     g2d:'The lights come on one at a time and the child repeats them in the same order. A wrong tap replays the sequence.',
     g2a:'Ready',
     noteL:'For the teacher',
-    note1:'Nothing is saved and nothing is sent. What the child does stays on the tablet — we ask for no names and there is no leaderboard.',
-    note2:'No game can be lost. A wrong square ends nothing; the round carries on and the child earns their star all the same.'
+    note1:'Nothing is sent anywhere. There is no server, no account and no leaderboard.',
+    note2:'Nothing is recorded by default. If the teacher wants to follow a child\u2019s progress they pick a name before starting, and the session is recorded \u2014 on this tablet and nowhere else.',
+    note3:'No game can be lost. A wrong square ends nothing; the round carries on and the child earns their star all the same.',
+    g3:'Progress',
+    g3d:'What each child has done on this tablet. Downloads as a spreadsheet.'
   }
 };
 var LANG='es';
@@ -161,6 +173,9 @@ function draw(){
   document.getElementById('tNoteL').textContent=t.noteL;
   document.getElementById('tNote1').textContent=t.note1;
   document.getElementById('tNote2').textContent=t.note2;
+  document.getElementById('tNote3').textContent=t.note3;
+  document.getElementById('tG3').textContent=t.g3;
+  document.getElementById('tG3d').textContent=t.g3d;
   document.getElementById('langBtn').textContent=LANG==='es'?'EN':'ES';
   document.documentElement.lang=LANG;
 }
