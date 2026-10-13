@@ -6,13 +6,13 @@
 <title>Las Luces · Cognitivo Junior</title>
 <style>
 /* ── Las Luces — pre-K / preescolar ──────────────────────────────
-   Shot Map's engine, everything else rebuilt for 2–5 year olds.
+   Find the lights: some squares light, they go out, the child finds
+   them again. Spatial memory, in any order.
 
-   What changed from the original and why:
-   · No basketball. The court drawing, the orange-on-black arcade
-     look and the seven stat boxes all meant something to a teenager
-     and nothing to a three-year-old. Light background, few colours,
-     one thing happening at a time.
+   The rules this is built on, and why:
+   · Light background, few colours, one thing happening at a time.
+     A dark arcade screen with seven live stat boxes is readable to a
+     teenager and noise to a three-year-old.
    · No words on the child's screen. Not one. A pre-reader can't be
      told "WATCH!" — they have to be shown.
    · No failure. A wrong tap dims for a moment and the round keeps
@@ -61,6 +61,8 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--ink);
 .s-sub{font-size:.84rem;color:var(--mute);margin-top:2px}
 .langb{border:1.5px solid var(--cellEdge);background:#fff;color:var(--mute);
   border-radius:999px;padding:7px 14px;font:inherit;font-size:.72rem;font-weight:800;cursor:pointer;flex-shrink:0}
+.s-site{font-size:.72rem;font-weight:800;letter-spacing:.06em;color:var(--calm);
+  background:#EDF4FA;border-radius:999px;padding:6px 13px;display:inline-block;margin-bottom:18px}
 .s-label{font-size:.68rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
   color:var(--mute);margin:20px 0 7px}
 .s-hint{font-size:.8rem;color:var(--mute);margin-top:6px;line-height:1.5}
@@ -73,6 +75,15 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--ink);
   margin-top:3px;letter-spacing:.02em;line-height:1.25}
 .pick button.on{border-color:var(--calm);background:#EDF4FA;color:var(--calm);
   box-shadow:0 0 0 3px rgba(91,141,184,.14)}
+.cj-sel{width:100%;padding:13px;border:2px solid var(--cellEdge);border-radius:13px;
+  background:#fff;color:var(--ink);font:inherit;font-size:.98rem;font-weight:700}
+.cj-in{width:100%;padding:13px;border:2px solid var(--cellEdge);border-radius:13px;
+  background:#fff;color:var(--ink);font:inherit;font-size:.98rem}
+.cj-sel:focus,.cj-in:focus{outline:none;border-color:var(--calm);
+  box-shadow:0 0 0 3px rgba(91,141,184,.14)}
+.cj-b{flex:1;padding:12px;border:2px solid var(--calm);background:var(--calm);color:#fff;
+  border-radius:13px;font:inherit;font-weight:800;font-size:.9rem;cursor:pointer}
+.cj-b.alt{background:#fff;color:var(--mute);border-color:var(--cellEdge)}
 .go{display:block;width:100%;margin-top:26px;padding:20px;border:none;border-radius:18px;
   background:var(--calm);color:#fff;font:inherit;font-size:1.15rem;font-weight:800;
   letter-spacing:.04em;cursor:pointer;box-shadow:0 6px 18px rgba(91,141,184,.3)}
@@ -155,6 +166,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--ink);
       </div>
       <button class="langb" id="langBtn" onclick="toggleLang()">EN</button>
     </div>
+    <div class="s-site" id="cjSite"></div>
 
     <div class="s-label" id="tSpeedL"></div>
     <div class="pick p5" id="pickSpeed"></div>
@@ -167,6 +179,8 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--ink);
     <div class="s-label" id="tLenL"></div>
     <div class="pick p3" id="pickLen"></div>
     <p class="s-hint" id="tLenH"></p>
+
+    <div id="cjPick"></div>
 
     <button class="go" id="goBtn" onclick="startSession()"></button>
 
@@ -192,9 +206,12 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--ink);
   <button class="d-back" id="dBack" onclick="quitToSetup()"></button>
 </div>
 
+<script src="cj-acceso.js"></script>
+<script src="cj-datos.js"></script>
 <script>
 (function(){
 var $=function(id){return document.getElementById(id)};
+if(window.CJA)CJA.guard(function(){});
 
 /* ── settings the teacher picks ───────────────────────────────── */
 var BPMS=[5,10,20,30,60];
@@ -202,6 +219,7 @@ var GRIDS=[{c:3,r:2,n:'2 × 3'},{c:4,r:3,n:'3 × 4'},{c:6,r:4,n:'4 × 6'}];
 var LENS=[5,8,12];
 
 var bpm=10, gridIx=0, rounds=8;
+var whoIs=function(){return null};   /* devuelve el id del nene, o null */
 
 /* The hard cap. Working memory is roughly 2 items at three years old
    and 3–4 at five, so this never asks for more than four and never
@@ -286,6 +304,9 @@ function drawSetup(){
     return '<button data-len="'+v+'"'+(v===rounds?' class="on"':'')+'>'+v+
       '<small>'+T('lenS')[i]+'</small></button>';
   }).join('');
+
+  /* Quién juega. Sin CJ el juego funciona igual, sencillamente no apunta. */
+  if(window.CJ) whoIs=CJ.mountPicker($('cjPick'),LANG,null);
 
   $('pickSpeed').querySelectorAll('button').forEach(function(b){
     b.onclick=function(){bpm=Number(b.dataset.bpm);drawSetup()};
@@ -498,6 +519,16 @@ function tap(ix){
 
 function finish(){
   clearTimers(); stopBeat(); phase='idle';
+  /* Se apunta sólo si el maestro escogió un nombre. */
+  try{
+    var who=whoIs&&whoIs();
+    if(who&&window.CJ){
+      CJ.record({kid:who,game:'luces',bpm:bpm,board:GRIDS[gridIx].n,
+        rounds:rounds,
+        perfect:results.filter(function(r){return r===true}).length,
+        helped:results.filter(function(r){return r===false}).length});
+    }
+  }catch(e){}
   $('play').style.display='none';
   $('done').style.display='flex';
   var stars=results.map(function(r){return r?'⭐':'✨'}).join('');
