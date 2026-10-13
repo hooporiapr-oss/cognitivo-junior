@@ -1,4 +1,4 @@
-/* ── Cognitivo Junior · progreso ─────────────────────────────────────
+/* ── Tinluz · progreso ─────────────────────────────────────
    Todo vive en esta tableta y en ningún otro sitio. No hay servidor, no
    hay cuenta, no hay subida. Si se borran los datos del navegador, esto
    se va con ellos — y eso hay que decírselo al maestro, no esconderlo.
