@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>Sígueme · Cognitivo Junior</title>
+<style>
+/* ── Sígueme — pre-K / preescolar ────────────────────────────────
+   The Fortress's mechanic, everything else rebuilt for 2–5 year olds.
+
+   Fortress lights its targets one at a time and you tap them back in
+   the same order. That is a harder job than Las Luces: remembering
+   WHERE develops before remembering IN WHAT ORDER, so a child who can
+   find three lights can often only repeat two. The sequence caps
+   lower here because of it.
+
+   What changed from the original and why:
+   · No basketball. The court drawing, the orange-on-black arcade
+     look and the seven stat boxes all meant something to a teenager
+     and nothing to a three-year-old. Light background, few colours,
+     one thing happening at a time.
+   · No words on the child's screen. Not one. A pre-reader can't be
+     told "WATCH!" — they have to be shown.
+   · No failure. A wrong tap dims for a moment and the round keeps
+     going. At this age an unrecoverable loss ends the session and
+     they don't ask for it again.
+   · No countdown. The original failed you on a timer. Here a child
+     takes as long as they take.
+   · No names and nothing uploaded. Nothing about a child leaves the
+     tablet — the Supabase call is gone, not hidden.
+   · The sequence caps and ramps instead of climbing forever, and a
+     wrong tap replays the sequence rather than ending the run. The
+     original ended the drill outright on one wrong target.
+   · Speed comes off the teacher's BPM setting: 30000/bpm per light,
+     so 60 BPM is exactly the original's 333ms lit / 167ms gap, and
+     5 BPM gives a four-second look at each one.
+   · The full-screen strobe is gone. The beat is now a sound plus a
+     small pulse. Even at 60 BPM that was 1 Hz — safe — but a
+     full-screen flash is still the wrong instrument for this room.
+   ──────────────────────────────────────────────────────────────── */
+
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#FAF7F2;          /* warm off-white, not clinical */
+  --ink:#3A4A5A;
+  --mute:#7D8C9A;
+  --cell:#E7EEF3;
+  --cellEdge:#D0DCE5;
+  --lit:#FFC44D;         /* the one colour that ever means "here"  */
+  --litEdge:#E8A62B;
+  --got:#7CC47F;
+  --gotEdge:#5EA862;
+  --calm:#5B8DB8;
+  --gold:#F0B429;
+}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--ink);
+  font-family:"Trebuchet MS","Segoe UI",Arial,sans-serif;
+  overflow:hidden;user-select:none;-webkit-user-select:none;
+  touch-action:manipulation;-webkit-text-size-adjust:100%}
+
+/* ── teacher's screen ─────────────────────────────────────────── */
+#setup{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;
+  align-items:center;overflow-y:auto;padding:20px 16px calc(24px + env(safe-area-inset-bottom,0px));
+  padding-top:calc(20px + env(safe-area-inset-top,0px))}
+.s-wrap{width:100%;max-width:440px}
+.s-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px}
+.s-title{font-size:1.5rem;font-weight:800;letter-spacing:-.02em}
+.s-title span{color:var(--gold)}
+.s-sub{font-size:.84rem;color:var(--mute);margin-top:2px}
+.langb{border:1.5px solid var(--cellEdge);background:#fff;color:var(--mute);
+  border-radius:999px;padding:7px 14px;font:inherit;font-size:.72rem;font-weight:800;cursor:pointer;flex-shrink:0}
+.s-label{font-size:.68rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--mute);margin:20px 0 7px}
+.s-hint{font-size:.8rem;color:var(--mute);margin-top:6px;line-height:1.5}
+.pick{display:grid;gap:7px}
+.pick.p3{grid-template-columns:repeat(3,1fr)}
+.pick.p5{grid-template-columns:repeat(5,1fr)}
+.pick button{min-width:0;padding:13px 4px;border:2px solid var(--cellEdge);background:#fff;
+  border-radius:13px;color:var(--ink);font:inherit;font-size:.95rem;font-weight:800;cursor:pointer;line-height:1.1}
+.pick button small{display:block;font-size:.56rem;font-weight:700;color:var(--mute);
+  margin-top:3px;letter-spacing:.02em;line-height:1.25}
+.pick button.on{border-color:var(--calm);background:#EDF4FA;color:var(--calm);
+  box-shadow:0 0 0 3px rgba(91,141,184,.14)}
+.go{display:block;width:100%;margin-top:26px;padding:20px;border:none;border-radius:18px;
+  background:var(--calm);color:#fff;font:inherit;font-size:1.15rem;font-weight:800;
+  letter-spacing:.04em;cursor:pointer;box-shadow:0 6px 18px rgba(91,141,184,.3)}
+.go:active{transform:scale(.99)}
+.s-foot{margin-top:22px;font-size:.72rem;color:var(--mute);text-align:center;line-height:1.6}
+.s-foot a{color:var(--mute)}
+.backlink{display:inline-block;margin-top:14px;font-size:.78rem;color:var(--mute);
+  text-decoration:none;border-bottom:1px solid var(--cellEdge)}
+
+/* ── the child's screen — no text anywhere ────────────────────── */
+#play{position:fixed;inset:0;display:none;flex-direction:column;background:var(--bg);
+  padding:calc(10px + env(safe-area-inset-top,0px)) 12px calc(10px + env(safe-area-inset-bottom,0px))}
+.dots{display:flex;gap:7px;justify-content:center;align-items:center;flex-shrink:0;
+  padding:4px 0 10px;flex-wrap:wrap}
+.dot{width:13px;height:13px;border-radius:50%;background:var(--cellEdge);transition:all .3s}
+.dot.done{background:var(--got)}
+.dot.perfect{background:var(--gold)}
+.dot.now{box-shadow:0 0 0 4px rgba(91,141,184,.25);background:var(--calm)}
+
+/* The status face: the only instruction a pre-reader gets. Eyes while
+   the lights show, hand while it is their turn, star when they finish. */
+.face{height:62px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:2.4rem;line-height:1;transition:transform .2s}
+.face.pulse{animation:beat .3s ease-out}
+@keyframes beat{0%{transform:scale(1.18)}100%{transform:scale(1)}}
+
+.board{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;padding:2px}
+/* Sized in JS so the cells stay square: stretched slabs are harder for a
+   small hand to aim at, and they stop reading as a board. */
+.grid{display:grid;gap:11px}
+.cell{border-radius:20px;background:var(--cell);border:3px solid var(--cellEdge);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  transition:background .12s,border-color .12s,transform .12s;min-width:0;min-height:0;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+/* Never colour alone: a lit cell also grows a white pip, a found cell
+   keeps it. A child who cannot separate amber from green still sees it. */
+.pip{width:34%;max-width:52px;aspect-ratio:1;border-radius:50%;background:#fff;
+  opacity:0;transform:scale(.4);transition:opacity .14s,transform .14s}
+.cell.lit{background:var(--lit);border-color:var(--litEdge);transform:scale(1.04)}
+.cell.lit .pip{opacity:1;transform:scale(1)}
+.cell.got{background:var(--got);border-color:var(--gotEdge)}
+.cell.got .pip{opacity:1;transform:scale(1)}
+.cell.oops{background:#DCE4EA;border-color:#C3CFD8}
+
+.pbar{flex-shrink:0;display:flex;justify-content:center;padding:8px 0 2px}
+/* Hold to leave. A single tap here is one small hand away from ending the
+   activity, and on a shared tablet that happens all day. */
+.pbar button{padding:11px 22px;border:2px solid var(--cellEdge);background:#fff;
+  border-radius:999px;color:var(--mute);font:inherit;font-size:.9rem;font-weight:800;
+  cursor:pointer;transition:transform .8s linear,border-color .8s linear,color .8s linear}
+.pbar button.holding{transform:scale(.84);border-color:var(--calm);color:var(--calm)}
+
+/* ── the end ──────────────────────────────────────────────────── */
+#done{position:fixed;inset:0;display:none;z-index:200;flex-direction:column;
+  align-items:center;justify-content:center;background:var(--bg);padding:24px;text-align:center}
+.d-stars{font-size:2.6rem;line-height:1.35;max-width:460px;margin-bottom:18px;word-break:break-word}
+.d-again{width:100%;max-width:340px;padding:24px;border:none;border-radius:22px;
+  background:var(--got);color:#fff;font:inherit;font-size:2.4rem;cursor:pointer;
+  box-shadow:0 6px 18px rgba(124,196,127,.4)}
+.d-again:active{transform:scale(.99)}
+.d-back{margin-top:20px;padding:11px 22px;border:2px solid var(--cellEdge);background:#fff;
+  border-radius:999px;color:var(--mute);font:inherit;font-size:.82rem;font-weight:800;cursor:pointer}
+
+@media(max-width:380px){
+  .grid{gap:8px}
+  .cell{border-radius:16px;border-width:2px}
+  .face{height:52px;font-size:2rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ─────────────── teacher sets it up ─────────────── -->
+<div id="setup">
+  <div class="s-wrap">
+    <div class="s-head">
+      <div>
+        <div class="s-title">Sí<span>gueme</span></div>
+        <div class="s-sub" id="tSub"></div>
+      </div>
+      <button class="langb" id="langBtn" onclick="toggleLang()">EN</button>
+    </div>
+
+    <div class="s-label" id="tSpeedL"></div>
+    <div class="pick p5" id="pickSpeed"></div>
+    <p class="s-hint" id="tSpeedH"></p>
+
+    <div class="s-label" id="tGridL"></div>
+    <div class="pick p3" id="pickGrid"></div>
+    <p class="s-hint" id="tGridH"></p>
+
+    <div class="s-label" id="tLenL"></div>
+    <div class="pick p3" id="pickLen"></div>
+    <p class="s-hint" id="tLenH"></p>
+
+    <button class="go" id="goBtn" onclick="startSession()"></button>
+
+    <div class="s-foot">
+      <p id="tFoot"></p>
+      <a class="backlink" href="index.html" id="tBack"></a>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────── the child plays ─────────────── -->
+<div id="play">
+  <div class="dots" id="dots"></div>
+  <div class="face" id="face">👀</div>
+  <div class="board"><div class="grid" id="grid"></div></div>
+  <div class="pbar"><button id="quitBtn">✕</button></div>
+</div>
+
+<!-- ─────────────── the end ─────────────── -->
+<div id="done">
+  <div class="d-stars" id="dStars"></div>
+  <button class="d-again" onclick="startSession()">▶</button>
+  <button class="d-back" id="dBack" onclick="quitToSetup()"></button>
+</div>
+
+<script>
+(function(){
+var $=function(id){return document.getElementById(id)};
+
+/* ── settings the teacher picks ───────────────────────────────── */
+var BPMS=[5,10,20,30,60];
+var GRIDS=[{c:3,r:2,n:'2 × 3'},{c:4,r:3,n:'3 × 4'},{c:6,r:4,n:'4 × 6'}];
+var LENS=[5,8,12];
+
+var bpm=10, gridIx=0, rounds=8;
+
+/* The hard cap, lower than Las Luces on purpose. Order memory runs a
+   step behind spatial memory at this age: two in a row is real work
+   for a three-year-old, four is a good five-year-old. Tied to board
+   size so a six-square board never asks for four. */
+function maxTargets(){
+  var cells=GRIDS[gridIx].c*GRIDS[gridIx].r;
+  return Math.max(2,Math.min(4,Math.round(cells/4)));
+}
+/* A gentle ramp across the session instead of +1 forever. */
+function targetsFor(roundIx){
+  var mx=maxTargets();
+  var step=Math.ceil(rounds/mx);
+  return Math.max(1,Math.min(mx,1+Math.floor(roundIx/step)));
+}
+/* One light's worth of time. 60 BPM lands on the original Fortress's
+   333ms lit / 167ms gap; 5 BPM stretches it to four seconds a light. */
+function perItem(){ return 30000/bpm }
+
+/* ── two languages, teacher side only ─────────────────────────── */
+var S={
+  es:{
+    sub:'Preescolar · 2 a 5 años · en orden',
+    speedL:'Velocidad',
+    speedH:'Cuánto dura cada luz de la secuencia. En 5 cada una se queda cuatro segundos — para los más pequeños. 60 es la velocidad del juego original.',
+    gridL:'Tablero',
+    gridH:'Menos cuadros, cuadros más grandes. El tablero también manda cuán larga puede ser la secuencia: 2 × 3 llega a dos luces, 4 × 6 llega a cuatro.',
+    lenL:'Rondas',
+    lenH:'Una sesión corta se termina antes de que se cansen. Si el nene se equivoca, la secuencia se repite — la ronda no se pierde.',
+    go:'Empezar',
+    foot:'Nada se guarda y nada se envía. Lo que hace el nene se queda en esta tableta.',
+    back:'← Volver',
+    bpmS:['muy lento','lento','normal','rápido','muy rápido'],
+    lenS:['corta','normal','larga'],
+    back2:'← Volver'
+  },
+  en:{
+    sub:'Preschool · ages 2 to 5 · in order',
+    speedL:'Speed',
+    speedH:'How long each light in the sequence lasts. At 5 each one holds for four seconds — for the youngest. 60 is the original game\u2019s speed.',
+    gridL:'Board',
+    gridH:'Fewer squares, bigger squares. The board also sets how long the sequence can get: 2 × 3 tops out at two lights, 4 × 6 at four.',
+    lenL:'Rounds',
+    lenH:'A short session ends before they tire. If the child taps wrong the sequence plays again — the round is not lost.',
+    go:'Start',
+    foot:'Nothing is saved and nothing is sent. What the child does stays on this tablet.',
+    back:'← Back',
+    bpmS:['very slow','slow','normal','fast','very fast'],
+    lenS:['short','normal','long'],
+    back2:'← Back'
+  }
+};
+var LANG='es';
+try{ LANG=localStorage.getItem('cfh_lang')||localStorage.getItem('cp-lang')||
+  localStorage.getItem('fc-lang')||
+  ((navigator.language||'').toLowerCase().indexOf('es')===0?'es':'en'); }catch(e){}
+function T(k){return (S[LANG]&&S[LANG][k])||S.es[k]}
+
+window.toggleLang=function(){
+  LANG=LANG==='es'?'en':'es';
+  try{ localStorage.setItem('cfh_lang',LANG);localStorage.setItem('cp-lang',LANG);
+       localStorage.setItem('fc-lang',LANG); }catch(e){}
+  $('langBtn').textContent=LANG==='es'?'EN':'ES';
+  drawSetup();
+};
+
+function drawSetup(){
+  $('tSub').textContent=T('sub');
+  $('tSpeedL').textContent=T('speedL');  $('tSpeedH').textContent=T('speedH');
+  $('tGridL').textContent=T('gridL');    $('tGridH').textContent=T('gridH');
+  $('tLenL').textContent=T('lenL');      $('tLenH').textContent=T('lenH');
+  $('goBtn').textContent=T('go');
+  $('tFoot').textContent=T('foot');
+  $('tBack').textContent=T('back');
+  $('dBack').textContent=T('back2');
+
+  $('pickSpeed').innerHTML=BPMS.map(function(v,i){
+    return '<button data-bpm="'+v+'"'+(v===bpm?' class="on"':'')+'>'+v+
+      '<small>'+T('bpmS')[i]+'</small></button>';
+  }).join('');
+  $('pickGrid').innerHTML=GRIDS.map(function(gr,i){
+    return '<button data-grid="'+i+'"'+(i===gridIx?' class="on"':'')+'>'+gr.n+
+      '<small>'+(gr.c*gr.r)+'</small></button>';
+  }).join('');
+  $('pickLen').innerHTML=LENS.map(function(v,i){
+    return '<button data-len="'+v+'"'+(v===rounds?' class="on"':'')+'>'+v+
+      '<small>'+T('lenS')[i]+'</small></button>';
+  }).join('');
+
+  $('pickSpeed').querySelectorAll('button').forEach(function(b){
+    b.onclick=function(){bpm=Number(b.dataset.bpm);drawSetup()};
+  });
+  $('pickGrid').querySelectorAll('button').forEach(function(b){
+    b.onclick=function(){gridIx=Number(b.dataset.grid);drawSetup()};
+  });
+  $('pickLen').querySelectorAll('button').forEach(function(b){
+    b.onclick=function(){rounds=Number(b.dataset.len);drawSetup()};
+  });
+}
+
+/* ── sound: soft tones, no harsh beep ─────────────────────────── */
+var aCtx=null;
+function ac(){ if(!aCtx){try{aCtx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}} return aCtx }
+function tone(freq,dur,vol,type){
+  var c=ac(); if(!c) return;
+  try{
+    if(c.state==='suspended')c.resume();
+    var o=c.createOscillator(),g=c.createGain();
+    o.type=type||'sine'; o.frequency.value=freq;
+    o.connect(g); g.connect(c.destination);
+    g.gain.setValueAtTime(0,c.currentTime);
+    g.gain.linearRampToValueAtTime(vol===undefined?.14:vol,c.currentTime+.02);
+    g.gain.exponentialRampToValueAtTime(.001,c.currentTime+dur);
+    o.start(); o.stop(c.currentTime+dur+.02);
+  }catch(e){}
+}
+/* A pentatonic run for a finished round — always pleasant, never a buzzer. */
+var PENTA=[523.25,587.33,659.25,783.99,880.00];
+function goodTone(i){ tone(PENTA[Math.min(i,PENTA.length-1)],.34,.16,'sine') }
+function showTone(){ tone(659.25,.22,.11,'triangle') }
+function tickTone(){ tone(440,.10,.07,'sine') }
+function oopsTone(){ tone(233.08,.26,.10,'sine') }
+function finishTone(){
+  [0,1,2,3,4].forEach(function(i){ setTimeout(function(){goodTone(i)},i*130) });
+}
+
+/* ── the game ─────────────────────────────────────────────────── */
+var cells=[],seq=[],atIx=0,timers=[],phase='idle';
+var roundIx=0,results=[],roundClean=true,beatTimer=null,replaysLeft=0;
+
+function clearTimers(){ timers.forEach(clearTimeout); timers=[]; }
+function stopBeat(){ if(beatTimer){clearInterval(beatTimer);beatTimer=null} }
+
+var cols=0,rows=0;
+function buildGrid(){
+  var gr=GRIDS[gridIx], n=gr.c*gr.r, el=$('grid');
+  el.innerHTML=''; cells=[];
+  for(var i=0;i<n;i++){
+    var c=document.createElement('div');
+    c.className='cell';
+    c.innerHTML='<span class="pip"></span>';
+    (function(ix){
+      c.addEventListener('pointerdown',function(e){e.preventDefault();tap(ix)});
+    })(i);
+    el.appendChild(c); cells.push(c);
+  }
+  fitGrid();
+}
+
+/* Keeps every cell square and as large as the space allows. On a phone
+   held upright a 3-wide board turns on its side, so six big squares fill
+   the screen instead of six narrow slabs. */
+function fitGrid(){
+  var gr=GRIDS[gridIx], board=document.querySelector('.board'), el=$('grid');
+  if(!board||!el||!cells.length)return;
+  var aw=board.clientWidth-4, ah=board.clientHeight-4;
+  if(aw<=0||ah<=0)return;
+
+  var c=gr.c, r=gr.r;
+  if(ah>aw && c>r){ c=gr.r; r=gr.c; }   /* portrait: stand it up */
+  cols=c; rows=r;
+  el.style.gridTemplateColumns='repeat('+c+',1fr)';
+  el.style.gridTemplateRows='repeat('+r+',1fr)';
+
+  var gap=parseFloat(getComputedStyle(el).gap)||11;
+  var side=Math.min((aw-gap*(c-1))/c,(ah-gap*(r-1))/r);
+  side=Math.max(48,side);
+  el.style.width=(side*c+gap*(c-1))+'px';
+  el.style.height=(side*r+gap*(r-1))+'px';
+}
+window.addEventListener('resize',fitGrid);
+window.addEventListener('orientationchange',function(){setTimeout(fitGrid,150)});
+function setCell(i,st){ cells[i].className='cell'+(st?' '+st:'') }
+function clearCells(){ cells.forEach(function(_,i){setCell(i)}) }
+
+function setFace(ch){
+  var f=$('face');
+  f.textContent=ch;
+  f.classList.remove('pulse'); void f.offsetWidth; f.classList.add('pulse');
+}
+
+function drawDots(){
+  $('dots').innerHTML=results.map(function(r,i){
+    var cls='dot'+(r===null?(i===roundIx?' now':''):(r?' perfect':' done'));
+    return '<div class="'+cls+'"></div>';
+  }).join('');
+}
+
+/* Fullscreen on a Chromebook or tablet hides the tab strip, the bookmarks
+   bar and the back button — all of which are within a child's reach. It
+   only works from a real tap, which is why it lives here and not on load. */
+function goFullscreen(){
+  try{
+    if(!document.fullscreenElement && document.documentElement.requestFullscreen)
+      document.documentElement.requestFullscreen().catch(function(){});
+  }catch(e){}
+}
+function leaveFullscreen(){
+  try{ if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function(){}); }catch(e){}
+}
+
+window.startSession=function(){
+  goFullscreen();
+  $('setup').style.display='none';
+  $('done').style.display='none';
+  $('play').style.display='flex';
+  roundIx=0; results=[]; for(var i=0;i<rounds;i++)results.push(null);
+  seq=[]; atIx=0; replaysLeft=2;
+  buildGrid(); drawDots();
+  try{ ac(); }catch(e){}
+  nextRound();
+};
+
+/* A different colour each round, so eight rounds don't feel like the same
+   round eight times. Green is never in here — green only ever means "you
+   found it", and that signal has to stay put. Nothing depends on telling
+   the colours apart: a lit square also grows a white dot. */
+var LITS=[
+  ['#FFC44D','#E8A62B'],   /* amber      */
+  ['#FF9B8A','#E8705C'],   /* coral      */
+  ['#7FC2E8','#4E9BC9'],   /* sky        */
+  ['#F79AC8','#D96FA6'],   /* pink       */
+  ['#C9A3EA','#A478D1'],   /* lilac      */
+  ['#FFE066','#E5C32E'],   /* sunshine   */
+  ['#5FD0D8','#35A8B2'],   /* turquoise  */
+  ['#FFAE73','#E5854A']    /* peach      */
+];
+function paintRound(i){
+  var p=LITS[i%LITS.length], el=$('grid');
+  el.style.setProperty('--lit',p[0]);
+  el.style.setProperty('--litEdge',p[1]);
+}
+
+function nextRound(){
+  if(roundIx>=rounds){ finish(); return; }
+  clearTimers(); stopBeat(); clearCells();
+  phase='showing'; atIx=0; roundClean=true; replaysLeft=2;
+  paintRound(roundIx);
+  drawDots(); setFace('\u{1F440}');
+
+  /* Distinct squares only. The same square blinking twice in a row is
+     genuinely ambiguous to a small child — did it go twice, or once? */
+  var n=targetsFor(roundIx), total=cells.length;
+  seq=[];
+  while(seq.length<n){
+    var c=Math.floor(Math.random()*total);
+    if(seq.indexOf(c)===-1)seq.push(c);
+  }
+
+  timers.push(setTimeout(function(){ playSeq(0) },600));
+}
+
+/* Lights the sequence one at a time, then it is the child's turn. */
+function playSeq(i){
+  if(phase!=='showing')return;
+  if(i>=seq.length){
+    atIx=0; phase='tapping'; setFace('\u{1F446}');
+    startBeat(perItem());
+    return;
+  }
+  var lit=perItem()*0.666, gap=perItem()*0.334;
+  setCell(seq[i],'lit'); showTone();
+  timers.push(setTimeout(function(){
+    setCell(seq[i]);
+    timers.push(setTimeout(function(){ playSeq(i+1) },gap));
+  },lit));
+}
+
+/* Wrong square: show the whole sequence again rather than ending
+   anything. Twice. After that it simply demonstrates the answer and
+   moves on, so a child who cannot get it never gets stuck on it. */
+function replaySeq(){
+  phase='showing'; atIx=0; stopBeat();
+  clearCells(); setFace('\u{1F440}');
+  timers.push(setTimeout(function(){ playSeq(0) },700));
+}
+
+function demonstrate(){
+  phase='showing'; stopBeat(); clearCells(); setFace('\u{1F440}');
+  var lit=perItem()*0.666, gap=perItem()*0.334;
+  seq.forEach(function(ix,k){
+    timers.push(setTimeout(function(){ setCell(ix,'lit'); showTone() },k*(lit+gap)));
+  });
+  timers.push(setTimeout(function(){
+    results[roundIx]=false; roundIx++;
+    phase='idle'; drawDots(); setFace('\u{2B50}');
+    timers.push(setTimeout(function(){ clearCells(); nextRound() },1100));
+  },seq.length*(lit+gap)+900));
+}
+
+/* A quiet pulse, not a full-screen flash. Stops the moment the child
+   engages, so there is no clock ticking at them while they think. */
+function startBeat(beatMs){
+  stopBeat();
+  beatTimer=setInterval(function(){
+    if(phase!=='tapping'){stopBeat();return}
+    tickTone();
+    var f=$('face');
+    f.classList.remove('pulse'); void f.offsetWidth; f.classList.add('pulse');
+  },beatMs);
+}
+
+var locked=false;
+function tap(ix){
+  if(phase!=='tapping')return;
+  if(locked)return;
+  locked=true; setTimeout(function(){locked=false},90);
+
+  if(ix===seq[atIx]){
+    /* Right one, right place. Blink it back so the child sees the
+       sequence being rebuilt under their own finger. */
+    stopBeat();
+    setCell(ix,'got'); goodTone(atIx);
+    atIx++;
+    if(atIx>=seq.length){
+      phase='idle'; clearTimers();
+      results[roundIx]=roundClean;
+      roundIx++; drawDots(); setFace('\u{2B50}');
+      timers.push(setTimeout(function(){ clearCells(); nextRound() },1100));
+    }
+  }else{
+    /* Wrong square, or the right square out of order. Nothing ends. */
+    roundClean=false; stopBeat();
+    setCell(ix,'oops'); oopsTone();
+    phase='showing';
+    if(replaysLeft>0){
+      replaysLeft--;
+      timers.push(setTimeout(replaySeq,620));
+    }else{
+      timers.push(setTimeout(demonstrate,620));
+    }
+  }
+}
+
+function finish(){
+  clearTimers(); stopBeat(); phase='idle';
+  $('play').style.display='none';
+  $('done').style.display='flex';
+  var stars=results.map(function(r){return r?'⭐':'✨'}).join('');
+  $('dStars').textContent=stars;
+  finishTone();
+}
+
+window.quitToSetup=function(){
+  clearTimers(); stopBeat(); phase='idle'; leaveFullscreen();
+  $('play').style.display='none';
+  $('done').style.display='none';
+  $('setup').style.display='flex';
+};
+
+/* Hold the ✕ for most of a second to leave. The button shrinks while it
+   is held, so an adult can see it is doing something; a stray tap by a
+   child does nothing at all. */
+(function(){
+  var qb=$('quitBtn'), holdT=null;
+  function down(e){
+    e.preventDefault();
+    clearTimeout(holdT);
+    qb.classList.add('holding');
+    holdT=setTimeout(function(){ qb.classList.remove('holding'); window.quitToSetup(); },800);
+  }
+  function up(){ clearTimeout(holdT); holdT=null; qb.classList.remove('holding'); }
+  qb.addEventListener('pointerdown',down);
+  ['pointerup','pointerleave','pointercancel'].forEach(function(ev){ qb.addEventListener(ev,up) });
+})();
+
+$('langBtn').textContent=LANG==='es'?'EN':'ES';
+drawSetup();
+})();
+</script>
+</body>
+</html>
