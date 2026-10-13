@@ -42,7 +42,12 @@ h1 span{color:var(--gold)}
 .langb{border:1.5px solid var(--cellEdge);background:#fff;color:var(--mute);border-radius:999px;
   padding:7px 14px;font:inherit;font-size:.72rem;font-weight:800;cursor:pointer;flex-shrink:0}
 
-main{flex:1 1 auto;padding:26px 0 36px}
+main{flex:1 1 auto;padding:22px 0 36px}
+/* El tablero, arriba. Es la misma tarjeta que sale al compartir el
+   enlace, así que lo que ve una directora en WhatsApp y lo que ve al
+   abrir la página son la misma imagen. */
+.hero{display:block;width:100%;height:auto;border-radius:20px;
+  border:2px solid var(--cellEdge);margin:0 0 24px}
 .lede{color:var(--mute);margin-bottom:24px}
 
 .card{display:block;text-decoration:none;color:inherit;background:#fff;
@@ -87,6 +92,9 @@ footer a{color:var(--mute)}
 
 <main>
   <div class="wrap">
+    <img class="hero" src="tinluz-share.jpg" width="1200" height="630"
+         alt="Tinluz — tablero con cuadros encendidos en ámbar, coral y azul">
+
     <p class="lede" id="tLede"></p>
 
     <a class="card" href="luces.html">
