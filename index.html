@@ -118,6 +118,17 @@ footer a{color:var(--mute)}
       <span class="age" id="tG2a"></span>
     </a>
 
+    <a class="card" href="zona.html">
+      <div class="pips">
+        <i style="background:#F0B429"></i><i style="background:#4FA8E0"></i>
+        <i style="background:#5EA862"></i><i style="background:#F28A3C"></i>
+        <i style="background:#8A97A4"></i>
+      </div>
+      <h2 id="tG4"></h2>
+      <p id="tG4d"></p>
+      <span class="age" id="tG4a"></span>
+    </a>
+
     <a class="card" href="maestro.html" style="margin-top:22px">
       <h2 id="tG3"></h2>
       <p id="tG3d"></p>
@@ -150,6 +161,9 @@ var S={
     g2:'Sígueme',
     g2d:'Las luces se encienden una por una y el nene las repite en el mismo orden. Si se equivoca, la secuencia se repite.',
     g2a:'Listo',
+    g4:'Zona 2-1-2',
+    g4d:'La primera idea de defensa en equipo: cinco amigos, cada uno con su casa en la cancha. Cuida tu casa y muévete hacia la bola.',
+    g4a:'4 a 6 años',
     noteL:'Para el maestro',
     note1:'Nada se envía a ningún sitio. No hay servidor, no hay cuenta y no hay tabla de posiciones.',
     note2:'Por defecto no se apunta nada. Si el maestro quiere seguir el progreso, escoge un nombre antes de empezar y la sesión se apunta — en esta tableta y en ningún otro sitio.',
@@ -166,6 +180,9 @@ var S={
     g2:'Sígueme',
     g2d:'The lights come on one at a time and the child repeats them in the same order. A wrong tap replays the sequence.',
     g2a:'Ready',
+    g4:'Zona 2-1-2',
+    g4d:'A first idea of team defense: five friends, each with a house on the court. Guard your house and move toward the ball.',
+    g4a:'Ages 4 to 6',
     noteL:'For the teacher',
     note1:'Nothing is sent anywhere. There is no server, no account and no leaderboard.',
     note2:'Nothing is recorded by default. If the teacher wants to follow a child\u2019s progress they pick a name before starting, and the session is recorded \u2014 on this tablet and nowhere else.',
@@ -189,6 +206,9 @@ function draw(){
   document.getElementById('tG2').textContent=t.g2;
   document.getElementById('tG2d').textContent=t.g2d;
   document.getElementById('tG2a').textContent=t.g2a;
+  document.getElementById('tG4').textContent=t.g4;
+  document.getElementById('tG4d').textContent=t.g4d;
+  document.getElementById('tG4a').textContent=t.g4a;
   document.getElementById('tNoteL').textContent=t.noteL;
   document.getElementById('tNote1').textContent=t.note1;
   document.getElementById('tNote2').textContent=t.note2;
