@@ -22,8 +22,18 @@ const TODOS = ['leon', 'delfin', 'rana', 'zorro', 'panda'];
   await p.addInitScript(() => { try {
     if (!localStorage.getItem('cj-acceso'))
       localStorage.setItem('cj-acceso', JSON.stringify({ code: 'CJ-PRUEBA', site: 'Centro de prueba', kind: 'licencia', until: '2099-12-31' }));
-    if (!localStorage.getItem('cfh_lang')) localStorage.setItem('cfh_lang', 'es');
-  } catch (e) {} });
+    // a phone set to English, and other Tinluz pages left in English: Zona still opens in Spanish
+    if (!localStorage.getItem('cfh_lang')) localStorage.setItem('cfh_lang', 'en');
+  } catch (e) {}
+    // a stand-in for the phone's voice, so the test hears what is said and in which voice
+    const voces = [{ name: 'Samantha', lang: 'en-US' }, { name: 'Paulina', lang: 'es-MX' }, { name: 'Mónica PR', lang: 'es-PR' }];
+    window.__dichos = [];
+    window.SpeechSynthesisUtterance = function (t) { this.text = t; };
+    Object.defineProperty(window, 'speechSynthesis', { configurable: true, value: {
+      getVoices: () => voces, addEventListener() {}, cancel() {},
+      speak: u => window.__dichos.push({ text: u.text, lang: u.lang, voice: u.voice && u.voice.name })
+    } });
+  });
 
   const Z = () => p.evaluate(() => ({ nivel: ZONA.nivel, round: ZONA.round, busy: ZONA.busy,
     want: ZONA.want && ZONA.want.id, chain: (ZONA.chain || []).map(g => g.id), results: ZONA.results }));
@@ -36,7 +46,7 @@ const TODOS = ['leon', 'delfin', 'rana', 'zorro', 'panda'];
   console.log('\n1 · The hub');
   await p.goto(U('index.html')); await p.waitForTimeout(300);
   ok(await p.locator('a.card[href="zona.html"]').count() === 1, 'Tinluz home has a Zona 2-1-2 card');
-  ok(/4 a 6 años/i.test(await p.locator('a.card[href="zona.html"]').innerText()), 'marked 4 a 6 años');
+  ok(/4 a 6 años|ages 4 to 6/i.test(await p.locator('a.card[href="zona.html"]').innerText()), 'marked 4 a 6 años (ages 4 to 6 when the home page is in English)');
 
   console.log('\n2 · The teacher screen');
   await p.goto(U('zona.html')); await p.waitForTimeout(400);
@@ -107,6 +117,27 @@ const TODOS = ['leon', 'delfin', 'rana', 'zorro', 'panda'];
   ok(/Guard your house/.test(en), 'EN: «Guard your house. Move toward the ball.»' + (/Guard/.test(en) ? '' : ' — got: ' + en.slice(0, 40)));
   await p.setViewportSize({ width: 360, height: 740 });
   ok(await p.evaluate(() => document.documentElement.scrollWidth <= 360), 'fits a small phone');
+
+  console.log('\n7 · Spanish first, Spanish voice');
+  await p.evaluate(() => localStorage.removeItem('cj-zona-lang'));
+  await p.goto(U('zona.html')); await p.waitForTimeout(300);
+  ok(/Cuida tu casa/.test(await p.locator('#tRules').innerText()) && await p.locator('#langBtn').innerText() === 'EN',
+     'opens in Spanish with an EN button, even on a phone set to English');
+  await p.locator('#pickLvl button[data-lvl="2"]').click();
+  await p.click('#goBtn'); await p.waitForTimeout(1500);
+  let d = await p.evaluate(() => window.__dichos);
+  ok(d.length >= 2 && d[0].text === '¡A defender!', 'the voice starts right on «Empezar»: «¡A defender!»');
+  ok(d.some(x => x.text === '¿Quién va a la bola?'), 'then says «¿Quién va a la bola?»');
+  ok(d.every(x => x.lang === 'es-PR' && x.voice === 'Mónica PR'), 'in a Spanish voice — Puerto Rico first (' + (d[0] && d[0].voice) + ')');
+  await p.evaluate(() => { document.querySelector('#quitBtn'); window.quitToSetup(); });
+  await p.click('#langBtn');
+  await p.evaluate(() => { window.__dichos = []; });
+  await p.click('#goBtn'); await p.waitForTimeout(1500);
+  d = await p.evaluate(() => window.__dichos);
+  ok(d.some(x => x.text === 'Who goes to the ball?') && d.every(x => x.lang === 'en-US'), 'tap EN: English words in an English voice');
+  await p.evaluate(() => window.quitToSetup());
+  await p.click('#langBtn');
+  ok(await p.locator('#langBtn').innerText() === 'EN', 'and ES brings Spanish back');
   ok(!errs.length, 'no page errors ' + errs.join(' | '));
 
   await b.close();
