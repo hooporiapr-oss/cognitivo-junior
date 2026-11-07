@@ -261,17 +261,17 @@ var S={
     bien:['Great job!','That’s it!','That’s defense!'], casi:'Almost!', muro:'You are a wall!'
   }
 };
+/* Spanish first, always. English only when the teacher taps EN —
+   the phone's own language does not decide it. */
 var LANG='es';
-try{ LANG=localStorage.getItem('cfh_lang')||localStorage.getItem('cp-lang')||
-  localStorage.getItem('fc-lang')||
-  ((navigator.language||'').toLowerCase().indexOf('es')===0?'es':'en'); }catch(e){}
+try{ if(localStorage.getItem('cj-zona-lang')==='en') LANG='en'; }catch(e){}
 function T(k){return (S[LANG]&&S[LANG][k])||S.es[k]}
 
 window.toggleLang=function(){
   LANG=LANG==='es'?'en':'es';
-  try{ localStorage.setItem('cfh_lang',LANG);localStorage.setItem('cp-lang',LANG);
-       localStorage.setItem('fc-lang',LANG); }catch(e){}
+  try{ localStorage.setItem('cj-zona-lang',LANG); }catch(e){}
   $('langBtn').textContent=LANG==='es'?'EN':'ES';
+  document.documentElement.lang=LANG;
   drawSetup();
 };
 
@@ -319,15 +319,34 @@ function tone(freq,dur,vol){
 }
 function okTone(){ tone(660,.18); setTimeout(function(){tone(880,.22)},120) }
 function oopsTone(){ tone(260,.25,.08) }
+/* The voice speaks the same language as the page: Spanish unless the
+   teacher switched to English. It picks a real Spanish voice — Puerto
+   Rico, then US Spanish, Mexico, Spain, any Spanish — so the words are
+   not read out in an English accent. Voices arrive late on some
+   phones, so the list is read again when it changes. */
+var VOCES=[];
+function cargarVoces(){ try{ VOCES=speechSynthesis.getVoices()||[] }catch(e){ VOCES=[] } }
+try{ cargarVoces(); speechSynthesis.addEventListener('voiceschanged',cargarVoces) }catch(e){}
+function voz4(lang){
+  var orden=lang==='es'?['es-PR','es-US','es-MX','es-419','es-ES','es']:['en-US','en-GB','en'];
+  var norm=function(x){return String(x||'').replace('_','-').toLowerCase()};
+  for(var i=0;i<orden.length;i++){
+    var o=orden[i].toLowerCase();
+    for(var j=0;j<VOCES.length;j++){ var l=norm(VOCES[j].lang); if(l===o||(o.length===2&&l.indexOf(o+'-')===0)) return VOCES[j] }
+  }
+  return null;
+}
 function say(t){
   if(!voz) return;
   try{
     if(!window.speechSynthesis) return;
+    if(!VOCES.length) cargarVoces();
     speechSynthesis.cancel();
     var u=new SpeechSynthesisUtterance(t);
-    u.lang=LANG==='es'?'es-US':'en-US'; u.rate=.88;
-    var vs=speechSynthesis.getVoices().filter(function(v){return v.lang.indexOf(LANG)===0});
-    if(vs.length)u.voice=vs[0];
+    var v=voz4(LANG);
+    u.lang=v?v.lang:(LANG==='es'?'es-US':'en-US');
+    if(v) u.voice=v;
+    u.rate=.88;
     speechSynthesis.speak(u);
   }catch(e){}
 }
@@ -401,6 +420,7 @@ function dots(){
 
 window.startSession=function(){
   clearTimers(); ac();
+  say(LANG==='es'?'¡A defender!':'Let\u2019s defend!');   /* inside the tap, so the phone lets the voice speak */
   Z.nivel=nivel; Z.round=0; Z.rounds=rounds; Z.results=[]; Z.busy=false; Z.clean=true;
   for(var i=0;i<rounds;i++) Z.results.push(null);
   /* Level 1 and 2 walk through every friend before repeating one. */
@@ -504,6 +524,7 @@ window.quitToSetup=function(){
 })();
 
 $('langBtn').textContent=LANG==='es'?'EN':'ES';
+document.documentElement.lang=LANG;
 drawSetup();
 })();
 </script>
