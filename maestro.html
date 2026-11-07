@@ -140,7 +140,7 @@ var S={
     noneOff:'Este navegador no guarda nada (ventana privada o almacenamiento apagado). El progreso no se va a poder apuntar.',
     sessions:'sesiones', session:'sesión',
     thDate:'Fecha', thGame:'Juego', thSet:'Ajustes', thStars:'Rondas',
-    luces:'Las Luces', sigueme:'Sígueme',
+    luces:'Las Luces', sigueme:'Sígueme', zona:'Zona 2-1-2',
     noRuns:'Sin sesiones todavía.',
     rm:'Quitar a {N} y sus sesiones',
     rmAsk:'¿Quitar a {N}? Se borran también sus sesiones. No se puede deshacer.',
@@ -158,7 +158,7 @@ var S={
     noneOff:'This browser saves nothing (private window or storage is off). Progress cannot be recorded.',
     sessions:'sessions', session:'session',
     thDate:'Date', thGame:'Game', thSet:'Settings', thStars:'Rounds',
-    luces:'Las Luces', sigueme:'Sígueme',
+    luces:'Las Luces', sigueme:'Sígueme', zona:'Zona 2-1-2',
     noRuns:'No sessions yet.',
     rm:'Remove {N} and their sessions',
     rmAsk:'Remove {N}? Their sessions go too. This cannot be undone.',
@@ -236,8 +236,8 @@ function draw(){
         runs.map(function(e){
           var gold=Math.max(0,e.perfect|0), plain=Math.max(0,e.helped|0);
           return '<tr><td>'+esc(when(e.at))+'</td>'+
-            '<td class="gmc"><span class="gm">'+T(e.game==='sigueme'?'sigueme':'luces')+'</span></td>'+
-            '<td>'+esc(e.bpm||'?')+' · '+esc(e.board||'?')+'</td>'+
+            '<td class="gmc"><span class="gm">'+T(e.game==='sigueme'||e.game==='zona'?e.game:'luces')+'</span></td>'+
+            '<td>'+(e.bpm?esc(e.bpm)+' · ':'')+esc(e.board||'?')+'</td>'+
             '<td class="stars">'+
               (new Array(gold+1).join('⭐'))+(new Array(plain+1).join('✨'))+
               ' <span style="color:var(--mute)">'+gold+'/'+(gold+plain)+'</span></td></tr>';
